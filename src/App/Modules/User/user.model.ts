@@ -7,7 +7,7 @@ dotenv.config();
 
 const CartItemSchema = new Schema({
   product: { type: Types.ObjectId, ref: "Product", required: true },
-  number: { type: Number, require: true },
+  number: { type: Number, required: true },
 });
 
 const userSchema = new Schema<TUser, TUserModel>(
