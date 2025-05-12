@@ -6,6 +6,14 @@ import httpStatus from "http-status";
 
 const addProduct = catchAsync(async (req, res) => {
   const productData = req.body;
+
+  // Attach the image URL from Cloudinary
+  if (req.file) {
+    productData.image = req.file.path; // The image URL will be in req.file.path
+  } else {
+    throw new AppError(httpStatus.BAD_REQUEST, "Image file is required");
+  }
+
   const result = await ProductServices.createProductIntoDB(productData);
   sendResponse(res, {
     success: true,
@@ -66,10 +74,33 @@ const deleteProduct = catchAsync(async (req, res) => {
   });
 });
 
+const addReview = catchAsync(async (req, res) => {
+  const productId = req.params?.id;
+  const userId = req.userId;
+
+  if (!productId || !userId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Product or User ID missing");
+  }
+
+  const result = await ProductServices.addReviewToProduct(
+    productId,
+    userId,
+    req.body
+  );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Review added successfully",
+    data: result,
+  });
+});
+
 export const ProductControllers = {
   addProduct,
   getAllProducts,
   getSingleProduct,
   updateProduct,
   deleteProduct,
+  addReview,
 };

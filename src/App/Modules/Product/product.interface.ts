@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 
 export type TProduct = {
   name: string;
@@ -13,10 +13,13 @@ export type TProduct = {
   information: TInformation;
   reviews: TReview[];
   image: string;
+  totalRating?: number;
 };
 
 export type TReview = {
-  userId: ObjectId;
+  userId: Types.ObjectId;
+  userName: string;
+  userImage?: string;
   rating: 1 | 2 | 3 | 4 | 5;
   comment: string;
 };

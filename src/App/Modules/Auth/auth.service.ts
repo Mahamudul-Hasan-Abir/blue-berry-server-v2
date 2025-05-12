@@ -15,9 +15,24 @@ const createUserIntoDB = async (payload: TUser) => {
   if (isUserExist) {
     throw new AppError(httpStatus.UNAUTHORIZED, "User already exist");
   }
-  const userData = { ...payload };
-  const result = await User.create(userData);
-  return result;
+
+  const user = await User.create({ ...payload });
+
+  const jwtPayload = {
+    userId: user._id,
+    role: user.role,
+  };
+
+  const accessToken = jwt.sign(jwtPayload, jwtSecret as string, {
+    expiresIn: "30d",
+  });
+
+  const { password, ...restData } = user.toObject();
+
+  return {
+    accessToken,
+    restData,
+  };
 };
 
 const loginUser = async (payload: TLoginUser) => {

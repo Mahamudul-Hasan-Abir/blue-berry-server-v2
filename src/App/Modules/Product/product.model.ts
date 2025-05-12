@@ -3,6 +3,8 @@ import { TInformation, TProduct, TReview } from "./product.interface";
 
 const reviewSchema = new Schema<TReview>({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  userName: { type: String, required: true },
+  userImage: { type: String },
   rating: { type: Number, required: true, min: 1, max: 5 },
   comment: { type: String, required: true },
 });
@@ -26,11 +28,6 @@ const productSchema = new Schema<TProduct>(
       type: String,
       required: true,
     },
-    // productId: {
-    //   type: string,
-    //   required: true,
-    //   unique: true,
-    // },
 
     description: {
       type: String,
@@ -72,6 +69,10 @@ const productSchema = new Schema<TProduct>(
     reviews: {
       type: [reviewSchema],
       default: [],
+    },
+    totalRating: {
+      type: Number,
+      default: 0,
     },
     image: {
       type: String,

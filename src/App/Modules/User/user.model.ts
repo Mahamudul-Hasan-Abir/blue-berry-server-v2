@@ -21,6 +21,7 @@ const userSchema = new Schema<TUser, TUserModel>(
       type: String,
       enum: { values: role },
       message: "{VALUE} is not valid role",
+      default: "user",
     },
     profileImage: { type: String, required: false },
     cart: { type: [CartItemSchema], default: [] },
