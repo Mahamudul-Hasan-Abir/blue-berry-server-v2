@@ -1,7 +1,8 @@
+import { UserServices } from "./user.service";
 import catchAsync from "../../../utils/catchAsync";
 import sendResponse from "../../../utils/sendResponse";
 import AppError from "../../Errors/AppError";
-import { UserServices } from "./user.service";
+
 import httpStatus from "http-status";
 
 const getAllUsers = catchAsync(async (req, res) => {
@@ -99,9 +100,10 @@ const updateCartItem = catchAsync(async (req, res) => {
 const removeCartItem = catchAsync(async (req, res) => {
   const userId = req.userId;
   if (!userId) {
-    throw new AppError(httpStatus.BAD_REQUEST, "User id is required");
+    throw new AppError(httpStatus.BAD_REQUEST, "User ID is required");
   }
-  const productId = req.params.productId as string;
+
+  const { productId } = req.body;
 
   const updatedUser = await UserServices.removeCartItem(userId, productId);
 
@@ -109,6 +111,7 @@ const removeCartItem = catchAsync(async (req, res) => {
     success: true,
     statusCode: httpStatus.OK,
     message: "Product removed from cart successfully",
+    data: updatedUser.cart, // Send back the updated cart to verify removal
   });
 });
 

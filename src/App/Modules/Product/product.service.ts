@@ -15,6 +15,7 @@ const getAllProductsFromDB = async () => {
 
 const getSingleProductFromDB = async (id: string) => {
   const product = await Product.findById(id);
+
   return product;
 };
 

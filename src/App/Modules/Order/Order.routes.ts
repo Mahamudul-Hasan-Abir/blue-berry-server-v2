@@ -2,10 +2,13 @@ import { Router } from "express";
 import auth from "../../middlewares/auth";
 import { User } from "../User/user.model";
 import { USER_ROLE } from "../Auth/auth.constant";
-import { OrderControllers } from "./Order.controller";
+import {
+  getOrdersByIndividualUser,
+  OrderControllers,
+} from "./Order.controller";
 
 const router = Router();
-
+router.get("/my-orders", auth(USER_ROLE.user), getOrdersByIndividualUser);
 router.post("/add", auth(USER_ROLE.user), OrderControllers.createOrder);
 router.delete(
   "/order/:orderId",

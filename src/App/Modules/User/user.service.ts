@@ -6,7 +6,6 @@ import { User } from "./user.model";
 import httpStatus from "http-status";
 
 const saultRounds = process.env.SAULT_ROUNDS;
-console.log(saultRounds);
 
 const getAllUsersFromDB = async () => {
   const users = await User.find({});
@@ -83,24 +82,38 @@ const updateCartItem = async (
   return result;
 };
 const removeCartItem = async (userId: string, productId: string) => {
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    {
-      $pull: { cart: { product: new Types.ObjectId(productId) } },
-    },
-    {
-      new: true,
+  try {
+    // Validate productId format
+    if (!Types.ObjectId.isValid(productId)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid product ID format");
     }
-  ).populate("cart.product");
 
-  if (!updatedUser) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "User not found or product not in the cart"
+    const productObjectId = new Types.ObjectId(productId);
+
+    const user = await User.findById(userId);
+    if (!user) throw new AppError(httpStatus.NOT_FOUND, "User not found");
+
+    // Check using equals() for proper ObjectId comparison
+    const itemIndex = user.cart.findIndex((item) =>
+      item.product.equals(productObjectId)
     );
-  }
 
-  return updatedUser;
+    if (itemIndex === -1) {
+      console.error("Product not found in cart. Cart contents:", user.cart);
+      throw new AppError(httpStatus.BAD_REQUEST, "Product not found in cart");
+    }
+
+    // Remove the item
+    user.cart.splice(itemIndex, 1);
+    await user.save();
+
+    // Return populated cart
+    const updatedUser = await User.findById(userId).populate("cart.product");
+    return updatedUser!;
+  } catch (error) {
+    console.error("Error in removeCartItem:", error);
+    throw error;
+  }
 };
 
 export const UserServices = {

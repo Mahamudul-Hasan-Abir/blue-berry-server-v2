@@ -13,7 +13,7 @@ const CartItemSchema = new Schema({
 const userSchema = new Schema<TUser, TUserModel>(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
     phone: { type: String, required: true },
     address: { type: String, required: true },
@@ -31,23 +31,40 @@ const userSchema = new Schema<TUser, TUserModel>(
   }
 );
 
+// userSchema.pre("save", async function (next) {
+//   const user = this;
+//   user.password = await bcrypt.hash(
+//     user.password,
+//     Number(process.env.LT_ROUNDS)
+//   );
+//   next();
+// });
 userSchema.pre("save", async function (next) {
-  const user = this;
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(process.env.SAULT_ROUNDS)
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(process.env.SALT_ROUNDS)
   );
   next();
 });
 
+// userSchema.statics.isUserExist = async function (id: string) {
+//   const existingUser = await User.findOne({
+//     _id: id,
+//     isDeleted: { $ne: true },
+//   });
+//   return existingUser;
+// };
 userSchema.statics.isUserExist = async function (id: string) {
-  const existingUser = await User.findOne({
-    _id: id,
-    isDeleted: { $ne: true },
-  });
-  return existingUser;
+  return User.findOne({ _id: id }, "_id name email role").lean(); // 🔸 Only return needed fields and use lean()
 };
 
+// userSchema.statics.isPasswordMatched = async function (
+//   plainPassword: string,
+//   hashedPassword: string
+// ) {
+//   return await bcrypt.compare(plainPassword, hashedPassword);
+// };
 userSchema.statics.isPasswordMatched = async function (
   plainPassword: string,
   hashedPassword: string

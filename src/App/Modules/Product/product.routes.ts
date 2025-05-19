@@ -7,6 +7,7 @@ import upload from "../../middlewares/multerConfig.ts";
 const router = Router();
 
 router.get("/", ProductControllers.getAllProducts);
+router.get("/:id", ProductControllers.getSingleProduct);
 
 router.post(
   "/",
@@ -15,7 +16,7 @@ router.post(
   ProductControllers.addProduct
 );
 router.post("/:id/review", auth(USER_ROLE.user), ProductControllers.addReview);
-router.get("/:id", ProductControllers.getSingleProduct);
+
 router.put("/:id", auth(USER_ROLE.admin), ProductControllers.updateProduct);
 router.delete("/:id", auth(USER_ROLE.admin), ProductControllers.deleteProduct);
 

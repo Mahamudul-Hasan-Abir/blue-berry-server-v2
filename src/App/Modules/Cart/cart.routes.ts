@@ -14,7 +14,7 @@ router.patch(
 );
 
 router.delete(
-  "/cart/remove/:productId",
+  "/cart/remove",
   auth(USER_ROLE.user),
   UserController.removeCartItem
 );

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import app from "./app";
 
 const dbUrl = process.env.DB_URL;
+
 const port = 5200;
 
 main().catch((err) => console.log(err));

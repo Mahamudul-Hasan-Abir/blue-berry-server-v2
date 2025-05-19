@@ -8,7 +8,6 @@ import sendResponse from "../../utils/sendResponse";
 import { User } from "../Modules/User/user.model";
 
 export const jwtSecret = process.env.JWT_SECRET;
-console.log(jwtSecret);
 
 const auth = (...requireRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {

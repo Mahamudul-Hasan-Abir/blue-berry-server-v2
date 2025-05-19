@@ -3,10 +3,14 @@ import cors from "cors";
 import router from "./routes";
 
 const app = express();
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://blue-berry-v2.vercel.app",
+];
 
 app.use(
   cors({
-    origin: "http://localhost:3000", // your frontend URL
+    origin: allowedOrigins, // your frontend URL
     credentials: true,
   })
 );

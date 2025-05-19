@@ -4,16 +4,19 @@ import { User } from "../User/user.model";
 import httpStatus from "http-status";
 import { TLoginUser } from "./auth.interface";
 import jwt from "jsonwebtoken";
-
+import validator from "validator";
 import dotenv from "dotenv";
 dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET;
 
 const createUserIntoDB = async (payload: TUser) => {
+  if (!validator.isEmail(payload.email)) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid email format");
+  }
   const isUserExist = await User.findOne({ email: payload.email });
   if (isUserExist) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "User already exist");
+    throw new AppError(httpStatus.CONFLICT, "User already exist");
   }
 
   const user = await User.create({ ...payload });

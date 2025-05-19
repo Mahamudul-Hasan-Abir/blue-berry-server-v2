@@ -10,14 +10,37 @@ const createOrder = catchAsync(async (req, res) => {
   if (!userId) {
     throw new AppError(httpStatus.UNAUTHORIZED, "User not found");
   }
-  const { products } = req.body;
-  const order = await OrderService.createOrder(userId, products);
+  // const { products } = req.body;
+  // const order = await OrderService.createOrder(userId, products);
+  const { products, totalPrice } = req.body;
+
+  if (!products || !Array.isArray(products) || !totalPrice) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid order data");
+  }
+
+  const order = await OrderService.createOrder(userId, products, totalPrice);
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
     message: "Order created successfully",
     data: order,
+  });
+});
+
+export const getOrdersByIndividualUser = catchAsync(async (req, res) => {
+  const userId = req.userId; // assuming `userId` is injected by auth middleware
+  if (!userId) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized access");
+  }
+
+  const orders = await OrderService.getOrdersByUser(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User orders fetched successfully",
+    data: orders,
   });
 });
 
@@ -81,6 +104,7 @@ const updateOrderStatus = catchAsync(async (req, res) => {
 export const OrderControllers = {
   updateOrderStatus,
   getAllOrders,
+  getOrdersByIndividualUser,
   getUserOrders,
   removeOrder,
   createOrder,
