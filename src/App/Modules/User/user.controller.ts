@@ -32,7 +32,12 @@ const getSingleUser = catchAsync(async (req, res) => {
 const updateProfile = catchAsync(async (req, res) => {
   const userId = req.params?.userId;
   const payload = req.body;
-  const result = await UserServices.updateSingleUserFromDB;
+
+  if (!userId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User ID is required");
+  }
+
+  const result = await UserServices.updateSingleUserFromDB(userId, payload);
 
   sendResponse(res, {
     success: true,
